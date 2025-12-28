@@ -48,7 +48,7 @@ class TransactionsTool(BaseDataTool):
         if categories_filter:
             category_ids = set()
             category_names = set()
-            
+
             for category in categories_filter:
                 if category in categories:
                     # Это ID категории
@@ -64,14 +64,15 @@ class TransactionsTool(BaseDataTool):
                             category_names.add(cat_obj.title)
                             found = True
                             break
-                    
+
                     # Если не найдено среди категорий, добавляем как название
                     if not found:
                         category_names.add(category)
-            
+
             # Применяем фильтр используя ту же логику, что и в отчетах
             filtered = [
-                t for t in filtered 
+                t
+                for t in filtered
                 if get_transaction_category_name(t, categories) in category_names
             ]
 

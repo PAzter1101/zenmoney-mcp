@@ -7,7 +7,6 @@ from typing import Any, Dict
 
 from mcp.types import CallToolResult, TextContent
 
-from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
 from utils.filtering import filter_transactions, get_transaction_category_name
 
@@ -40,7 +39,7 @@ class CategoryBreakdownReport(BaseReport):
             # Используем правильную логику для доходов и расходов
             if hasattr(t, "is_income") and t.is_income:
                 by_category[cat_name]["income"] += t.income or 0.0
-            elif t.is_expense(filtered) == True:
+            elif t.is_expense(filtered):
                 by_category[cat_name]["outcome"] += t.outcome or 0.0
 
         result = f"📊 Разбивка по категориям за {args['year']}"

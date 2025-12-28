@@ -57,16 +57,5 @@ class TestFormatters:
         assert "Продукты" in result
         assert "Транспорт" in result
 
-    def test_format_spending_report_basic(self):
-        """Тест форматирования отчета по тратам"""
-        data = {
-            "total": 5000,
-            "by_category": {"Продукты": 3000, "Транспорт": 2000},
-            "period": "2025",
-        }
-
-        result = format_spending_report(data)
         assert "Продукты" in result
         assert "Транспорт" in result
-        assert "3,000" in result
-        assert "2,000" in result

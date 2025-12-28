@@ -2,7 +2,7 @@
 Форматирование списков и базовых данных
 """
 
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from models.category import Category
 from models.transaction import Transaction

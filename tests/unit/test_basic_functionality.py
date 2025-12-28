@@ -7,7 +7,7 @@ from datetime import datetime
 import pytest
 
 from models.transaction import Transaction
-from utils.validators import validate_date_format, validate_period_params
+from utils.validation import validate_date_format, validate_period_params
 
 
 class TestTransactionModel:

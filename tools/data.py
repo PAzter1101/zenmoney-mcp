@@ -86,7 +86,10 @@ class DataTools:
                         "category": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "Фильтр по категориям (список ID или названий категорий)",
+                            "description": (
+                                "Фильтр по категориям "
+                                "(список ID или названий категорий)"
+                            ),
                         },
                     },
                 },
