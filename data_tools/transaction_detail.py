@@ -59,10 +59,16 @@ class TransactionDetailTool(BaseDataTool):
         result += f"Получатель: {transaction.payee or 'Не указан'}\n"
 
         # Категория
+        category_name = "Без категории"
         if transaction.category and transaction.category in categories:
-            result += f"Категория: {categories[transaction.category].title}\n"
-        else:
-            result += f"Категория: Без категории\n"
+            category_name = categories[transaction.category].title
+        elif transaction.tag:
+            # Берем первую категорию из массива тегов
+            first_tag = transaction.tag[0]
+            if first_tag in categories:
+                category_name = categories[first_tag].title
+            
+        result += f"Категория: {category_name}\n"
 
         # Счета
         if transaction.account and transaction.account in accounts:

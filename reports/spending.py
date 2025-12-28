@@ -29,8 +29,8 @@ class SpendingReport(BaseReport):
         filtered = filter_transactions(transactions, filter_params)
 
         # Разделение на переводы и расходы
-        transfers = [t for t in filtered if hasattr(t, "is_transfer") and t.is_transfer]
-        expenses = [t for t in filtered if hasattr(t, "is_expense") and t.is_expense]
+        transfers = [t for t in filtered if t.is_transfer(filtered)]
+        expenses = [t for t in filtered if t.is_expense(filtered)]
 
         if not expenses:
             return CallToolResult(
@@ -46,6 +46,10 @@ class SpendingReport(BaseReport):
             cat_name = "Без категории"
             if t.category and t.category in categories:
                 cat_name = categories[t.category].title
+            elif t.tag:
+                first_tag = t.tag[0]
+                if first_tag in categories:
+                    cat_name = categories[first_tag].title
             by_category[cat_name] += t.outcome or 0.0
 
         report_data = {

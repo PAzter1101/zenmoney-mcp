@@ -28,7 +28,7 @@ class MerchantAnalysisReport(BaseReport):
         filtered = filter_transactions(transactions, filter_params)
         # Используем правильную логику для определения расходов
         expenses = [
-            t for t in filtered if hasattr(t, "is_expense") and t.is_expense and t.payee
+            t for t in filtered if t.is_expense(filtered) and t.payee
         ]
 
         by_merchant: Dict[str, Dict[str, float]] = defaultdict(

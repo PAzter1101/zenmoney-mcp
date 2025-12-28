@@ -52,26 +52,15 @@ class Transaction(BaseModel):
         outcome = self.outcome or 0.0
         return income - outcome
 
-    @property
-    def is_expense(self) -> bool:
+    def is_expense(self, all_transactions: List["Transaction"] = None) -> bool:
         """Является ли транзакция расходом (исключая переводы между счетами)"""
-        # Если нет outcome - точно не расход
         if not self.outcome or self.outcome <= 0:
             return False
 
-        # Если incomeAccount и outcomeAccount разные - это перевод между счетами
-        if (
-            self.incomeAccount
-            and self.outcomeAccount
-            and self.incomeAccount != self.outcomeAccount
-        ):
+        # Проверяем, является ли это переводом
+        if self.is_transfer(all_transactions):
             return False
 
-        # Если есть outcome, но нет income - это расход
-        if not self.income or self.income <= 0:
-            return True
-
-        # Если есть и income и outcome на одном счете - это тоже расход
         return True
 
     @property
@@ -95,14 +84,22 @@ class Transaction(BaseModel):
 
         return False
 
-    @property
-    def is_transfer(self) -> bool:
+    def is_transfer(self, all_transactions: List["Transaction"] = None) -> bool:
         """Является ли транзакция переводом между счетами"""
-        return bool(
-            self.incomeAccount
-            and self.outcomeAccount
-            and self.incomeAccount != self.outcomeAccount
-        )
+        # Стандартная проверка разных счетов
+        if (self.incomeAccount and self.outcomeAccount and 
+            self.incomeAccount != self.outcomeAccount):
+            return True
+            
+        # Проверка парных операций (перевод между собственными счетами)
+        if all_transactions and self.outcome and self.outcome > 0:
+            for other in all_transactions:
+                if (other.id != self.id and 
+                    other.date == self.date and
+                    other.income and other.income > 0 and
+                    abs(self.outcome - other.income) < 0.01):
+                    return True
+        return False
 
     def is_paired_with(
         self, other_transaction: "Transaction", tolerance: float = 0.01

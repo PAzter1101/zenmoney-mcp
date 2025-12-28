@@ -12,6 +12,7 @@ from data_tools.export import DataExportTool
 from data_tools.merchants import MerchantsTool
 from data_tools.transaction_detail import TransactionDetailTool
 from data_tools.transactions import TransactionsTool
+from data_tools.update_transaction import UpdateTransactionTool
 from src.client import ZenMoneyClient
 
 
@@ -25,6 +26,7 @@ class DataTools:
         self.accounts_tool = AccountsTool()
         self.merchants_tool = MerchantsTool()
         self.export_tool = DataExportTool()
+        self.update_transaction_tool = UpdateTransactionTool()
 
     def list_tools(self) -> List[Tool]:
         """Список инструментов получения данных"""
@@ -153,6 +155,11 @@ class DataTools:
                     },
                 },
             ),
+            Tool(
+                name="data_set_transaction",
+                description="Обновление данных транзакции (категория, комментарий и др.)",
+                inputSchema=self.update_transaction_tool.input_schema,
+            ),
         ]
 
     async def handle_call(
@@ -180,6 +187,8 @@ class DataTools:
                 return await self.merchants_tool.execute(client, arguments)
             elif name == "data_export":
                 return await self.export_tool.execute(client, arguments)
+            elif name == "data_set_transaction":
+                return await self.update_transaction_tool.execute(client, arguments)
             else:
                 raise ValueError(f"Неизвестный инструмент данных: {name}")
 

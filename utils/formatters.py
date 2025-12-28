@@ -43,7 +43,7 @@ def format_categories(categories: Dict[str, Category]) -> str:
     cat_list.sort()
 
     for i, (title, cat_id) in enumerate(cat_list, 1):
-        result += f"{i:2d}. {title}\n"
+        result += f"{i:2d}. {title} (ID: {cat_id})\n"
 
     return result
 
