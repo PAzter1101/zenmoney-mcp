@@ -17,10 +17,7 @@ class MerchantAnalysisReport(BaseReport):
         """Генерация отчета по торговцам"""
         transactions = await client.get_transactions()
         
-        filter_params = TransactionFilter(
-            year=args.get('year'),
-            month=args.get('month')
-        )
+        filter_params = self._create_filter_params(args)
         
         filtered = filter_transactions(transactions, filter_params)
         # Используем правильную логику для определения расходов
@@ -35,10 +32,8 @@ class MerchantAnalysisReport(BaseReport):
         top_count = args.get('top', 10)
         sorted_merchants = sorted(by_merchant.items(), key=lambda x: x[1]['total'], reverse=True)[:top_count]
         
-        result = f"🏪 Топ-{top_count} торговцев за {args['year']}"
-        if args.get('month'):
-            result += f"-{args['month']:02d}"
-        result += f"\n\n"
+        period_desc = self._get_period_description(args)
+        result = f"🏪 Топ-{top_count} торговцев за {period_desc}\n\n"
         
         for i, (merchant, data) in enumerate(sorted_merchants, 1):
             avg = data['total'] / data['count']
