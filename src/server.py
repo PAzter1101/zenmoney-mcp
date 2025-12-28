@@ -7,15 +7,22 @@ import os
 import sys
 from typing import Optional
 
-# Добавляем корневую директорию проекта в sys.path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import CallToolResult
 
-from tools.data import DataTools
-from tools.reports import ReportsTools
+# Добавляем корневую директорию в PYTHONPATH если её там нет
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+try:
+    from tools.data import DataTools
+    from tools.reports import ReportsTools
+except ImportError:
+    # Fallback для случая, когда модули не найдены
+    print("Ошибка импорта модулей. Проверьте структуру проекта.", file=sys.stderr)
+    sys.exit(1)
 
 
 class ZenMoneyMCPServer:

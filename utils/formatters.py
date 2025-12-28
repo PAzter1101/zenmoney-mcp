@@ -32,18 +32,80 @@ def format_transactions(
     return result
 
 
+def _separate_categories(
+    categories: Dict[str, Category],
+) -> tuple[Dict[str, Category], Dict[str, List[tuple[str, Category]]]]:
+    """Разделяет категории на родительские и дочерние"""
+    parent_categories: Dict[str, Category] = {}
+    child_categories: Dict[str, List[tuple[str, Category]]] = {}
+
+    for cat_id, cat in categories.items():
+        if cat.parent is None:
+            parent_categories[cat_id] = cat
+        else:
+            if cat.parent not in child_categories:
+                child_categories[cat.parent] = []
+            child_categories[cat.parent].append((cat_id, cat))
+
+    return parent_categories, child_categories
+
+
+def _format_parent_with_children(
+    parent_id: str,
+    parent_cat: Category,
+    child_categories: Dict[str, List[tuple[str, Category]]],
+    counter: int,
+) -> tuple[str, int]:
+    """Форматирует родительскую категорию с дочерними"""
+    result = f"{counter:2d}. {parent_cat.title} (ID: {parent_id})\n"
+    counter += 1
+
+    if parent_id in child_categories:
+        sorted_children = sorted(child_categories[parent_id], key=lambda x: x[1].title)
+        for child_id, child_cat in sorted_children:
+            result += f"    └─ {child_cat.title} (ID: {child_id})\n"
+            counter += 1
+
+    return result, counter
+
+
 def format_categories(categories: Dict[str, Category]) -> str:
-    """Форматирование списка категорий"""
+    """Форматирование списка категорий с иерархией"""
     if not categories:
         return "Категории не найдены"
 
-    result = f"Всего категорий: {len(categories)}\n\n"
+    parent_categories, child_categories = _separate_categories(categories)
 
-    cat_list = [(cat.title, cat_id) for cat_id, cat in categories.items()]
-    cat_list.sort()
+    result = f"Всего категорий: {len(categories)}\n"
+    parent_count = len(parent_categories)
+    child_count = len(categories) - parent_count
+    result += f"Родительских: {parent_count}, Дочерних: {child_count}\n\n"
 
-    for i, (title, cat_id) in enumerate(cat_list, 1):
-        result += f"{i:2d}. {title} (ID: {cat_id})\n"
+    # Сортируем родительские категории
+    sorted_parents = sorted(parent_categories.items(), key=lambda x: x[1].title)
+
+    counter = 1
+    for parent_id, parent_cat in sorted_parents:
+        parent_result, counter = _format_parent_with_children(
+            parent_id, parent_cat, child_categories, counter
+        )
+        result += parent_result
+
+    # Добавляем категории с отсутствующими родителями
+    orphaned = [
+        (cat_id, cat)
+        for cat_id, cat in categories.items()
+        if cat.parent is not None and cat.parent not in categories
+    ]
+
+    if orphaned:
+        result += "\nКатегории с отсутствующими родителями:\n"
+        for cat_id, cat in sorted(orphaned, key=lambda x: x[1].title):
+            result += (
+                f"{counter:2d}. {cat.title} (ID: {cat_id}) "
+                f"[родитель: {cat.parent}]\n"
+            )
+            counter += 1
 
     return result
 
