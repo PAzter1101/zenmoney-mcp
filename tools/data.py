@@ -14,7 +14,7 @@ from data_tools.transaction_detail import TransactionDetailTool
 from data_tools.transactions import TransactionsTool
 from data_tools.update_transaction import UpdateTransactionTool
 from src.client import ZenMoneyClient
-from utils.data_router import DataToolsRouter
+from utils.routing import DataToolsRouter
 
 
 class DataTools:
@@ -82,6 +82,11 @@ class DataTools:
                         "limit": {
                             "type": "integer",
                             "description": "Лимит транзакций (по умолчанию 50)",
+                        },
+                        "category": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Фильтр по категориям (список ID или названий категорий)",
                         },
                     },
                 },

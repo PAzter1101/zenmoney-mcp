@@ -7,7 +7,7 @@ from typing import Any, Dict
 from mcp.types import CallToolResult, TextContent
 
 from src.client import ZenMoneyClient
-from utils.formatters import format_categories
+from utils.formatting import format_categories
 
 from .base import BaseDataTool
 

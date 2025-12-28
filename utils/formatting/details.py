@@ -1,5 +1,5 @@
 """
-Форматирование деталей транзакций
+Детальное форматирование транзакций
 """
 
 from typing import Dict, List
@@ -99,7 +99,6 @@ class TransactionDetailFormatter:
         result = "\n📄 Данные чека:\n"
         result += f"QR-код: {transaction.qrCode}\n"
 
-        # Парсим QR-код чека
         qr_params = {}
         for param in transaction.qrCode.split("&"):
             if "=" in param:

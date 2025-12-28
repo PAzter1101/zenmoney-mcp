@@ -8,7 +8,7 @@ from typing import Any, Dict
 from mcp.types import CallToolResult, TextContent
 
 from src.client import ZenMoneyClient
-from utils.filters import filter_transactions
+from utils.filtering import filter_transactions, get_transaction_category_name
 
 from .base import BaseReport
 
@@ -40,13 +40,7 @@ class SpendingReport(BaseReport):
         by_category: Dict[str, float] = defaultdict(float)
 
         for t in expenses:
-            cat_name = "Без категории"
-            if t.category and t.category in categories:
-                cat_name = categories[t.category].title
-            elif t.tag:
-                first_tag = t.tag[0]
-                if first_tag in categories:
-                    cat_name = categories[first_tag].title
+            cat_name = get_transaction_category_name(t, categories)
             by_category[cat_name] += t.outcome or 0.0
 
         period_desc = self._get_period_description(args)

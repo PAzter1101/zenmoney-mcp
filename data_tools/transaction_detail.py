@@ -8,7 +8,7 @@ from mcp.types import CallToolResult, TextContent
 
 from models.transaction import Transaction
 from src.client import ZenMoneyClient
-from utils.transaction_formatter import TransactionDetailFormatter
+from utils.formatting import TransactionDetailFormatter
 
 from .base import BaseDataTool
 

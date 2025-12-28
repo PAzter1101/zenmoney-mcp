@@ -9,7 +9,7 @@ from mcp.types import CallToolResult, TextContent
 
 from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
-from utils.filters import filter_transactions
+from utils.filtering import filter_transactions
 
 from .base import BaseReport
 

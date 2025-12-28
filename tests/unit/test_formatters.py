@@ -8,9 +8,8 @@ import pytest
 
 from models.category import Category
 from models.transaction import Transaction
-from utils.formatters import (
+from utils.formatting import (
     format_categories,
-    format_spending_report,
     format_transactions,
 )
 

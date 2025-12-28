@@ -9,7 +9,7 @@ from mcp.types import CallToolResult, TextContent
 
 from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
-from utils.filters import filter_transactions
+from utils.filtering import filter_transactions, get_transaction_category_name
 
 from .base import BaseReport
 
@@ -24,9 +24,7 @@ class CategoryBreakdownReport(BaseReport):
         transactions = await client.get_transactions()
         categories = await client.get_categories()
 
-        filter_params = TransactionFilter(
-            year=args.get("year"), month=args.get("month")
-        )
+        filter_params = self._create_filter_params(args)
 
         filtered = filter_transactions(transactions, filter_params)
 
@@ -35,16 +33,14 @@ class CategoryBreakdownReport(BaseReport):
         )
 
         for t in filtered:
-            cat_name = "Без категории"
-            if t.category and t.category in categories:
-                cat_name = categories[t.category].title
+            cat_name = get_transaction_category_name(t, categories)
 
             by_category[cat_name]["count"] += 1
 
             # Используем правильную логику для доходов и расходов
             if hasattr(t, "is_income") and t.is_income:
                 by_category[cat_name]["income"] += t.income or 0.0
-            elif t.is_expense(filtered) is True:
+            elif t.is_expense(filtered) == True:
                 by_category[cat_name]["outcome"] += t.outcome or 0.0
 
         result = f"📊 Разбивка по категориям за {args['year']}"

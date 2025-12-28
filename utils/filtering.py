@@ -1,10 +1,24 @@
 """
-Утилиты фильтрации данных
+Фильтрация и обработка данных
 """
 
-from typing import List
+from typing import Dict, List
 
+from models.category import Category
 from models.transaction import Transaction, TransactionFilter
+
+
+def get_transaction_category_name(
+    transaction: Transaction, categories: Dict[str, Category]
+) -> str:
+    """Получить название категории для транзакции"""
+    if transaction.category and transaction.category in categories:
+        return categories[transaction.category].title
+    elif transaction.tag:
+        first_tag = transaction.tag[0]
+        if first_tag in categories:
+            return categories[first_tag].title
+    return "Без категории"
 
 
 def filter_transactions(

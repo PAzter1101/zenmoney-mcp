@@ -1,5 +1,5 @@
 """
-Утилиты форматирования вывода
+Форматирование списков и базовых данных
 """
 
 from typing import Any, Dict, List
@@ -28,6 +28,45 @@ def format_transactions(
 
     if len(transactions) > limit:
         result += f"\n... и еще {len(transactions) - limit} транзакций"
+
+    return result
+
+
+def format_categories(categories: Dict[str, Category]) -> str:
+    """Форматирование списка категорий с иерархией"""
+    if not categories:
+        return "Категории не найдены"
+
+    parent_categories, child_categories = _separate_categories(categories)
+
+    result = f"Всего категорий: {len(categories)}\n"
+    parent_count = len(parent_categories)
+    child_count = len(categories) - parent_count
+    result += f"Родительских: {parent_count}, Дочерних: {child_count}\n\n"
+
+    sorted_parents = sorted(parent_categories.items(), key=lambda x: x[1].title)
+
+    counter = 1
+    for parent_id, parent_cat in sorted_parents:
+        parent_result, counter = _format_parent_with_children(
+            parent_id, parent_cat, child_categories, counter
+        )
+        result += parent_result
+
+    orphaned = [
+        (cat_id, cat)
+        for cat_id, cat in categories.items()
+        if cat.parent is not None and cat.parent not in categories
+    ]
+
+    if orphaned:
+        result += "\nКатегории с отсутствующими родителями:\n"
+        for cat_id, cat in sorted(orphaned, key=lambda x: x[1].title):
+            result += (
+                f"{counter:2d}. {cat.title} (ID: {cat_id}) "
+                f"[родитель: {cat.parent}]\n"
+            )
+            counter += 1
 
     return result
 
@@ -67,65 +106,3 @@ def _format_parent_with_children(
             counter += 1
 
     return result, counter
-
-
-def format_categories(categories: Dict[str, Category]) -> str:
-    """Форматирование списка категорий с иерархией"""
-    if not categories:
-        return "Категории не найдены"
-
-    parent_categories, child_categories = _separate_categories(categories)
-
-    result = f"Всего категорий: {len(categories)}\n"
-    parent_count = len(parent_categories)
-    child_count = len(categories) - parent_count
-    result += f"Родительских: {parent_count}, Дочерних: {child_count}\n\n"
-
-    # Сортируем родительские категории
-    sorted_parents = sorted(parent_categories.items(), key=lambda x: x[1].title)
-
-    counter = 1
-    for parent_id, parent_cat in sorted_parents:
-        parent_result, counter = _format_parent_with_children(
-            parent_id, parent_cat, child_categories, counter
-        )
-        result += parent_result
-
-    # Добавляем категории с отсутствующими родителями
-    orphaned = [
-        (cat_id, cat)
-        for cat_id, cat in categories.items()
-        if cat.parent is not None and cat.parent not in categories
-    ]
-
-    if orphaned:
-        result += "\nКатегории с отсутствующими родителями:\n"
-        for cat_id, cat in sorted(orphaned, key=lambda x: x[1].title):
-            result += (
-                f"{counter:2d}. {cat.title} (ID: {cat_id}) "
-                f"[родитель: {cat.parent}]\n"
-            )
-            counter += 1
-
-    return result
-
-
-def format_spending_report(data: Dict[str, Any]) -> str:
-    """Форматирование отчета по тратам"""
-    total = data.get("total_expenses", 0)
-    count = data.get("transaction_count", 0)
-    avg = data.get("average_expense", 0)
-
-    result = "📊 Отчет по тратам\n\n"
-    result += f"Общие траты: {total:,.2f} ₽\n"
-    result += f"Количество транзакций: {count}\n"
-    result += f"Средняя трата: {avg:,.2f} ₽\n\n"
-
-    if "by_category" in data:
-        result += "По категориям:\n"
-        for cat, amount in sorted(
-            data["by_category"].items(), key=lambda x: x[1], reverse=True
-        )[:10]:
-            result += f"  {cat}: {amount:,.2f} ₽\n"
-
-    return result
