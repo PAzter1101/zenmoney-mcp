@@ -60,7 +60,7 @@ def find_duplicates(transactions: List[Transaction]) -> List[List[Transaction]]:
             continue
 
         group = [t1]
-        for j, t2 in enumerate(transactions[i + 1:], i + 1):
+        for j, t2 in enumerate(transactions[i + 1 :], i + 1):
             if (
                 t1.date == t2.date
                 and abs(t1.amount - t2.amount) < 0.01
