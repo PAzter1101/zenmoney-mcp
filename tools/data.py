@@ -18,7 +18,7 @@ from src.client import ZenMoneyClient
 class DataTools:
     """Класс инструментов получения данных"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.transactions_tool = TransactionsTool()
         self.transaction_detail_tool = TransactionDetailTool()
         self.categories_tool = CategoresTool()

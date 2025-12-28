@@ -39,21 +39,23 @@ class IncomeAnalysisReport(BaseReport):
                 ]
             )
 
-        total_income = sum(t.income for t in incomes)
-        by_source = defaultdict(lambda: {"count": 0, "total": 0})
-        by_category = defaultdict(float)
+        total_income = sum(t.income or 0.0 for t in incomes if t.income)
+        by_source: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: {"count": 0, "total": 0}
+        )
+        by_category: Dict[str, float] = defaultdict(float)
 
         # Группировка по источникам (payee)
         for t in incomes:
             source = t.payee or "Неизвестный источник"
             by_source[source]["count"] += 1
-            by_source[source]["total"] += t.income
+            by_source[source]["total"] += t.income or 0.0
 
             # Группировка по категориям
             cat_name = "Без категории"
             if t.category and t.category in categories:
                 cat_name = categories[t.category].title
-            by_category[cat_name] += t.income
+            by_category[cat_name] += t.income or 0.0
 
         result = f"💰 Анализ доходов за {args['year']}"
         if args.get("month"):

@@ -30,7 +30,9 @@ class CategoryBreakdownReport(BaseReport):
 
         filtered = filter_transactions(transactions, filter_params)
 
-        by_category = defaultdict(lambda: {"count": 0, "income": 0, "outcome": 0})
+        by_category: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: {"count": 0, "income": 0, "outcome": 0}
+        )
 
         for t in filtered:
             cat_name = "Без категории"
@@ -41,9 +43,9 @@ class CategoryBreakdownReport(BaseReport):
 
             # Используем правильную логику для доходов и расходов
             if hasattr(t, "is_income") and t.is_income:
-                by_category[cat_name]["income"] += t.income
+                by_category[cat_name]["income"] += t.income or 0.0
             elif hasattr(t, "is_expense") and t.is_expense:
-                by_category[cat_name]["outcome"] += t.outcome
+                by_category[cat_name]["outcome"] += t.outcome or 0.0
 
         result = f"📊 Разбивка по категориям за {args['year']}"
         if args.get("month"):

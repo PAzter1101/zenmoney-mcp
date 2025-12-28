@@ -9,9 +9,11 @@ import sys
 # Добавляем корневую директорию проекта в sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from typing import Optional
+
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import Tool
+from mcp.types import CallToolResult, Tool
 
 from tools.data import DataTools
 from tools.reports import ReportsTools
@@ -20,17 +22,17 @@ from tools.reports import ReportsTools
 class ZenMoneyMCPServer:
     """MCP сервер для работы с ДзенМани API"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.server = Server("zenmoney-mcp")
         self.data_tools = DataTools()
         self.reports_tools = ReportsTools()
-        self.token = None
+        self.token: Optional[str] = None
 
-    def register_tools(self):
+    def register_tools(self) -> None:
         """Регистрация всех инструментов"""
 
         @self.server.list_tools()
-        async def list_tools():
+        async def list_tools() -> list:
             """Список всех доступных инструментов"""
             import sys
 
@@ -56,7 +58,7 @@ class ZenMoneyMCPServer:
                 raise
 
         @self.server.call_tool()
-        async def handle_tool_call(name: str, arguments: dict):
+        async def handle_tool_call(name: str, arguments: dict) -> CallToolResult:
             """Обработка вызовов инструментов"""
 
             # Логирование для отладки
@@ -70,7 +72,7 @@ class ZenMoneyMCPServer:
             try:
                 if name.startswith("data_"):
                     result = await self.data_tools.handle_call(
-                        name, arguments, self.token
+                        name, arguments, self.token or ""
                     )
                     print(
                         f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr
@@ -78,7 +80,7 @@ class ZenMoneyMCPServer:
                     return result
                 elif name.startswith("reports_"):
                     result = await self.reports_tools.handle_call(
-                        name, arguments, self.token
+                        name, arguments, self.token or ""
                     )
                     print(
                         f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr
@@ -95,7 +97,7 @@ class ZenMoneyMCPServer:
                 traceback.print_exc(file=sys.stderr)
                 raise
 
-    async def run(self):
+    async def run(self) -> None:
         """Запуск сервера"""
         self.register_tools()
 
@@ -105,7 +107,7 @@ class ZenMoneyMCPServer:
             )
 
 
-async def main():
+async def main() -> None:
     """Точка входа"""
     import argparse
     import os
@@ -115,13 +117,12 @@ async def main():
     args = parser.parse_args()
 
     # Получаем токен из аргументов или переменной окружения
-    token = args.token or os.getenv("ZENMONEY_TOKEN")
+    token: str = args.token or os.getenv("ZENMONEY_TOKEN") or ""
 
     server = ZenMoneyMCPServer()
 
     # Если токен передан, устанавливаем его сразу
-    if token:
-        server.token = token
+    server.token = token
 
     await server.run()
 

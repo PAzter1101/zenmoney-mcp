@@ -29,8 +29,8 @@ class CashFlowReport(BaseReport):
         expenses = [t for t in filtered if hasattr(t, "is_expense") and t.is_expense]
         transfers = [t for t in filtered if hasattr(t, "is_transfer") and t.is_transfer]
 
-        total_income = sum(t.income for t in incomes)
-        total_expenses = sum(t.outcome for t in expenses)
+        total_income = sum(t.income or 0.0 for t in incomes if t.income)
+        total_expenses = sum(t.outcome or 0.0 for t in expenses if t.outcome)
         net_flow = total_income - total_expenses
 
         period_desc = self._get_period_description(args)

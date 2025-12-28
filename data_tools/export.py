@@ -5,7 +5,10 @@
 import csv
 import io
 import json
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
+
+if TYPE_CHECKING:
+    from models.transaction import Transaction
 
 from mcp.types import CallToolResult, TextContent
 
@@ -99,7 +102,7 @@ class DataExportTool(BaseDataTool):
 
         return CallToolResult(content=[TextContent(type="text", text=result_text)])
 
-    def _get_transaction_type(self, transaction) -> str:
+    def _get_transaction_type(self, transaction: "Transaction") -> str:
         """Определение типа транзакции"""
         if hasattr(transaction, "is_income") and transaction.is_income:
             return "income"

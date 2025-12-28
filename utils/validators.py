@@ -3,7 +3,7 @@
 """
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 def validate_date_format(date_str: str) -> bool:
@@ -37,7 +37,9 @@ def validate_transaction_data(data: Dict[str, Any]) -> List[str]:
     return errors
 
 
-def validate_period_params(year: int = None, month: int = None) -> List[str]:
+def validate_period_params(
+    year: Optional[int] = None, month: Optional[int] = None
+) -> List[str]:
     """Валидация параметров периода"""
     errors = []
 

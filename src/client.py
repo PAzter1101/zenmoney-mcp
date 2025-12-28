@@ -33,7 +33,8 @@ class ZenMoneyClient:
 
         response = requests.post(url, json=payload, headers=self.headers)
         response.raise_for_status()
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
 
     async def get_transactions(self) -> List[Transaction]:
         """Получение всех транзакций"""

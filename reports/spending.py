@@ -59,14 +59,14 @@ class SpendingReport(BaseReport):
                 ]
             )
 
-        total_expenses = sum(t.outcome for t in expenses)
-        by_category = defaultdict(float)
+        total_expenses = sum(t.outcome or 0.0 for t in expenses if t.outcome)
+        by_category: Dict[str, float] = defaultdict(float)
 
         for t in expenses:
             cat_name = "Без категории"
             if t.category and t.category in categories:
                 cat_name = categories[t.category].title
-            by_category[cat_name] += t.outcome
+            by_category[cat_name] += t.outcome or 0.0
 
         report_data = {
             "total_expenses": total_expenses,

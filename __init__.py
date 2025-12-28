@@ -1,1 +1,0 @@
-# ZenMoney MCP Server

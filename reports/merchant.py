@@ -31,11 +31,14 @@ class MerchantAnalysisReport(BaseReport):
             t for t in filtered if hasattr(t, "is_expense") and t.is_expense and t.payee
         ]
 
-        by_merchant = defaultdict(lambda: {"count": 0, "total": 0})
+        by_merchant: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: {"count": 0, "total": 0}
+        )
 
         for t in expenses:
-            by_merchant[t.payee]["count"] += 1
-            by_merchant[t.payee]["total"] += t.outcome
+            payee = t.payee or "Неизвестный получатель"
+            by_merchant[payee]["count"] += 1
+            by_merchant[payee]["total"] += t.outcome or 0.0
 
         top_count = args.get("top", 10)
         sorted_merchants = sorted(

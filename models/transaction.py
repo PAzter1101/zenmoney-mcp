@@ -48,7 +48,9 @@ class Transaction(BaseModel):
     @property
     def amount(self) -> float:
         """Сумма транзакции (положительная для доходов, отрицательная для расходов)"""
-        return self.income - self.outcome
+        income = self.income or 0.0
+        outcome = self.outcome or 0.0
+        return income - outcome
 
     @property
     def is_expense(self) -> bool:
@@ -102,7 +104,9 @@ class Transaction(BaseModel):
             and self.incomeAccount != self.outcomeAccount
         )
 
-    def is_paired_with(self, other_transaction, tolerance: float = 0.01) -> bool:
+    def is_paired_with(
+        self, other_transaction: "Transaction", tolerance: float = 0.01
+    ) -> bool:
         """Проверяет, является ли эта транзакция парной с другой (внутренний перевод)"""
         if not other_transaction or self.id == other_transaction.id:
             return False
@@ -112,21 +116,26 @@ class Transaction(BaseModel):
             return False
 
         # Проверяем суммы (одна должна быть доходом, другая расходом с одинаковой суммой)
+        self_outcome = self.outcome or 0.0
+        other_income = other_transaction.income or 0.0
+        self_income = self.income or 0.0
+        other_outcome = other_transaction.outcome or 0.0
+
         if (
-            abs(self.outcome - other_transaction.income) <= tolerance
-            and self.outcome > 0
-            and other_transaction.income > 0
-            and (self.income == 0 or self.income is None)
-            and (other_transaction.outcome == 0 or other_transaction.outcome is None)
+            abs(self_outcome - other_income) <= tolerance
+            and self_outcome > 0
+            and other_income > 0
+            and self_income == 0
+            and other_outcome == 0
         ):
             return True
 
         if (
-            abs(self.income - other_transaction.outcome) <= tolerance
-            and self.income > 0
-            and other_transaction.outcome > 0
-            and (self.outcome == 0 or self.outcome is None)
-            and (other_transaction.income == 0 or other_transaction.income is None)
+            abs(self_income - other_outcome) <= tolerance
+            and self_income > 0
+            and other_outcome > 0
+            and self_outcome == 0
+            and other_income == 0
         ):
             return True
 

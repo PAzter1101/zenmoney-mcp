@@ -17,7 +17,7 @@ from src.client import ZenMoneyClient
 class ReportsTools:
     """Класс инструментов отчетов"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.spending_report = SpendingReport()
         self.category_report = CategoryBreakdownReport()
         self.merchant_report = MerchantAnalysisReport()

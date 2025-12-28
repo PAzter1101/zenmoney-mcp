@@ -25,9 +25,9 @@ class MerchantsTool(BaseDataTool):
         for t in transactions:
             if t.payee and hasattr(t, "is_expense") and t.is_expense:
                 if t.payee not in merchants:
-                    merchants[t.payee] = {"count": 0, "total": 0}
+                    merchants[t.payee] = {"count": 0, "total": 0.0}
                 merchants[t.payee]["count"] += 1
-                merchants[t.payee]["total"] += t.outcome
+                merchants[t.payee]["total"] += t.outcome or 0.0
 
         limit = args.get("limit", 50)
         sorted_merchants = sorted(

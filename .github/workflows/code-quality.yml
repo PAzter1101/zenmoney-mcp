@@ -38,4 +38,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
     
     - name: Type check with mypy
-      run: mypy src/ models/ --ignore-missing-imports
+      run: |
+        pip install types-requests
+        mypy --ignore-missing-imports src/ models/ data_tools/ reports/ tools/ utils/
