@@ -65,6 +65,41 @@ class TransactionDetailTool(BaseDataTool):
         if transaction.comment:
             result += f"Комментарий: {transaction.comment}\n"
         
+        # Информация о чеке
+        if transaction.qrCode:
+            result += f"\n📄 Данные чека:\n"
+            result += f"QR-код: {transaction.qrCode}\n"
+            
+            # Парсим QR-код чека
+            qr_params = {}
+            for param in transaction.qrCode.split('&'):
+                if '=' in param:
+                    key, value = param.split('=', 1)
+                    qr_params[key] = value
+            
+            if 't' in qr_params:
+                result += f"Время: {qr_params['t']}\n"
+            if 's' in qr_params:
+                result += f"Сумма чека: {qr_params['s']} ₽\n"
+            if 'fn' in qr_params:
+                result += f"Фискальный номер: {qr_params['fn']}\n"
+            if 'i' in qr_params:
+                result += f"Номер документа: {qr_params['i']}\n"
+            if 'fp' in qr_params:
+                result += f"Фискальный признак: {qr_params['fp']}\n"
+        
+        # Геолокация
+        if transaction.latitude and transaction.longitude:
+            result += f"\n📍 Местоположение:\n"
+            result += f"Координаты: {transaction.latitude}, {transaction.longitude}\n"
+        
+        # Дополнительная информация
+        if transaction.originalPayee and transaction.originalPayee != transaction.payee:
+            result += f"Исходный получатель: {transaction.originalPayee}\n"
+        
+        if transaction.source:
+            result += f"Источник: {transaction.source}\n"
+        
         # Тип операции
         result += f"\nТип операции: "
         if transaction.is_transfer:

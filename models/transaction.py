@@ -19,6 +19,30 @@ class Transaction(BaseModel):
     payee: Optional[str] = None
     comment: Optional[str] = None
     
+    # Дополнительные поля из API
+    user: Optional[int] = None
+    changed: Optional[int] = None
+    incomeInstrument: Optional[int] = None
+    outcomeInstrument: Optional[int] = None
+    created: Optional[int] = None
+    originalPayee: Optional[str] = None
+    deleted: Optional[bool] = None
+    viewed: Optional[bool] = None
+    hold: Optional[bool] = None
+    qrCode: Optional[str] = None  # QR-код чека
+    source: Optional[str] = None
+    tag: Optional[List[str]] = None
+    opIncome: Optional[float] = None
+    opOutcome: Optional[float] = None
+    opIncomeInstrument: Optional[int] = None
+    opOutcomeInstrument: Optional[int] = None
+    latitude: Optional[float] = None  # Координаты места покупки
+    longitude: Optional[float] = None
+    merchant: Optional[str] = None  # ID торговца
+    incomeBankID: Optional[str] = None
+    outcomeBankID: Optional[str] = None
+    reminderMarker: Optional[str] = None
+    
     @property
     def amount(self) -> float:
         """Сумма транзакции (положительная для доходов, отрицательная для расходов)"""
