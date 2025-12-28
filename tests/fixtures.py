@@ -2,9 +2,10 @@
 Базовые фикстуры для тестов
 """
 
-import pytest
 from datetime import datetime
 from unittest.mock import Mock
+
+import pytest
 
 from models.transaction import Transaction
 
@@ -18,7 +19,7 @@ def sample_expense_transaction():
         income=0,
         outcome=1000,
         category="food",
-        payee="Магазин"
+        payee="Магазин",
     )
 
 
@@ -31,7 +32,7 @@ def sample_income_transaction():
         income=50000,
         outcome=0,
         category="salary",
-        payee="Работодатель"
+        payee="Работодатель",
     )
 
 
@@ -41,7 +42,7 @@ def sample_categories():
     return {
         "food": Mock(title="Продукты"),
         "salary": Mock(title="Зарплата"),
-        "transport": Mock(title="Транспорт")
+        "transport": Mock(title="Транспорт"),
     }
 
 
@@ -50,7 +51,7 @@ def sample_accounts():
     """Фикстура счетов"""
     return {
         "acc1": Mock(title="Основной счет", balance=50000, type="cash"),
-        "acc2": Mock(title="Карта", balance=25000, type="ccard")
+        "acc2": Mock(title="Карта", balance=25000, type="ccard"),
     }
 
 
