@@ -1,8 +1,8 @@
 # ZenMoney MCP Server
 
-[![Tests](https://github.com/YOUR_USERNAME/zenmoney-mcp/workflows/Tests/badge.svg)](https://github.com/YOUR_USERNAME/zenmoney-mcp/actions)
-[![Code Quality](https://github.com/YOUR_USERNAME/zenmoney-mcp/workflows/Code%20Quality/badge.svg)](https://github.com/YOUR_USERNAME/zenmoney-mcp/actions)
-[![codecov](https://codecov.io/gh/YOUR_USERNAME/zenmoney-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/zenmoney-mcp)
+[![Tests](https://github.com/pazter1101/zenmoney-mcp/workflows/Tests/badge.svg)](https://github.com/pazter1101/zenmoney-mcp/actions)
+[![Code Quality](https://github.com/pazter1101/zenmoney-mcp/workflows/Code%20Quality/badge.svg)](https://github.com/pazter1101/zenmoney-mcp/actions)
+[![codecov](https://codecov.io/gh/pazter1101/zenmoney-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/pazter1101/zenmoney-mcp)
 
 Model Context Protocol (MCP) сервер для работы с API ДзенМани.
 
