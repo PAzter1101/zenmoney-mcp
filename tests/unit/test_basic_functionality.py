@@ -32,18 +32,18 @@ class TestTransactionModel:
         # Доход
         income_tx = Transaction(id="1", date="2025-01-15", income=1000, outcome=0)
         assert income_tx.is_income is True
-        assert income_tx.is_expense is False
+        assert income_tx.is_expense() is False
 
         # Расход
         expense_tx = Transaction(id="2", date="2025-01-15", income=0, outcome=500)
         assert expense_tx.is_income is False
-        assert expense_tx.is_expense is True
+        assert expense_tx.is_expense() is True
 
     def test_transaction_with_none_values(self):
         """Тест транзакции с None значениями"""
         tx = Transaction(id="1", date="2025-01-15", income=None, outcome=1000)
         assert tx.amount == -1000
-        assert tx.is_expense is True
+        assert tx.is_expense() is True
 
 
 class TestValidators:

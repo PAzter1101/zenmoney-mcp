@@ -26,8 +26,8 @@ class CashFlowReport(BaseReport):
 
         # Используем правильную логику для определения доходов и расходов
         incomes = [t for t in filtered if hasattr(t, "is_income") and t.is_income]
-        expenses = [t for t in filtered if hasattr(t, "is_expense") and t.is_expense]
-        transfers = [t for t in filtered if hasattr(t, "is_transfer") and t.is_transfer]
+        expenses = [t for t in filtered if t.is_expense(filtered) is True]
+        transfers = [t for t in filtered if t.is_transfer(filtered) is True]
 
         total_income = sum(t.income or 0.0 for t in incomes if t.income)
         total_expenses = sum(t.outcome or 0.0 for t in expenses if t.outcome)
@@ -51,7 +51,7 @@ class CashFlowReport(BaseReport):
 
         # Дополнительная статистика
         if incomes and expenses:
-            result += f"\n📊 Статистика:\n"
+            result += "\n📊 Статистика:\n"
             result += f"  Средний доход: {total_income / len(incomes):,.2f} ₽\n"
             result += f"  Средний расход: {total_expenses / len(expenses):,.2f} ₽\n"
             result += (

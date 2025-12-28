@@ -5,15 +5,14 @@
 import asyncio
 import os
 import sys
+from typing import Optional
 
 # Добавляем корневую директорию проекта в sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Optional
-
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import CallToolResult, Tool
+from mcp.types import CallToolResult
 
 from tools.data import DataTools
 from tools.reports import ReportsTools

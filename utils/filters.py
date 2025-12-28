@@ -2,7 +2,7 @@
 Утилиты фильтрации данных
 """
 
-from typing import Any, Dict, List
+from typing import List
 
 from models.transaction import Transaction, TransactionFilter
 

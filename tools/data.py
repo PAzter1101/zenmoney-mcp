@@ -14,6 +14,7 @@ from data_tools.transaction_detail import TransactionDetailTool
 from data_tools.transactions import TransactionsTool
 from data_tools.update_transaction import UpdateTransactionTool
 from src.client import ZenMoneyClient
+from utils.data_router import DataToolsRouter
 
 
 class DataTools:
@@ -27,6 +28,18 @@ class DataTools:
         self.merchants_tool = MerchantsTool()
         self.export_tool = DataExportTool()
         self.update_transaction_tool = UpdateTransactionTool()
+
+        self.router = DataToolsRouter(
+            {
+                "data_get_transactions": self.transactions_tool,
+                "data_get_transaction_detail": self.transaction_detail_tool,
+                "data_get_categories": self.categories_tool,
+                "data_get_accounts": self.accounts_tool,
+                "data_get_merchants": self.merchants_tool,
+                "data_export": self.export_tool,
+                "data_set_transaction": self.update_transaction_tool,
+            }
+        )
 
     def list_tools(self) -> List[Tool]:
         """Список инструментов получения данных"""
@@ -150,14 +163,19 @@ class DataTools:
                         },
                         "limit": {
                             "type": "integer",
-                            "description": "Максимальное количество транзакций (по умолчанию 1000)",
+                            "description": (
+                                "Максимальное количество транзакций "
+                                "(по умолчанию 1000)"
+                            ),
                         },
                     },
                 },
             ),
             Tool(
                 name="data_set_transaction",
-                description="Обновление данных транзакции (категория, комментарий и др.)",
+                description=(
+                    "Обновление данных транзакции " "(категория, комментарий и др.)"
+                ),
                 inputSchema=self.update_transaction_tool.input_schema,
             ),
         ]
@@ -166,7 +184,6 @@ class DataTools:
         self, name: str, arguments: Dict[str, Any], auth_token: str
     ) -> CallToolResult:
         """Обработка вызовов инструментов данных"""
-
         if not auth_token:
             return CallToolResult(
                 content=[TextContent(type="text", text="❌ Требуется аутентификация")]
@@ -174,24 +191,7 @@ class DataTools:
 
         try:
             client = ZenMoneyClient(auth_token)
-
-            if name == "data_get_transactions":
-                return await self.transactions_tool.execute(client, arguments)
-            elif name == "data_get_transaction_detail":
-                return await self.transaction_detail_tool.execute(client, arguments)
-            elif name == "data_get_categories":
-                return await self.categories_tool.execute(client, arguments)
-            elif name == "data_get_accounts":
-                return await self.accounts_tool.execute(client, arguments)
-            elif name == "data_get_merchants":
-                return await self.merchants_tool.execute(client, arguments)
-            elif name == "data_export":
-                return await self.export_tool.execute(client, arguments)
-            elif name == "data_set_transaction":
-                return await self.update_transaction_tool.execute(client, arguments)
-            else:
-                raise ValueError(f"Неизвестный инструмент данных: {name}")
-
+            return await self.router.route_call(name, arguments, client)
         except Exception as e:
             return CallToolResult(
                 content=[

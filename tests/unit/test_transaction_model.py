@@ -42,15 +42,15 @@ class TestTransactionModel(unittest.TestCase):
         """Тест свойств транзакции (доход/расход/перевод)"""
         # Расход
         expense = Transaction(id="expense", date="2025-01-01", outcome=100.0)
-        self.assertTrue(expense.is_expense)
+        self.assertTrue(expense.is_expense())
         self.assertFalse(expense.is_income)
-        self.assertFalse(expense.is_transfer)
+        self.assertFalse(expense.is_transfer())
 
         # Доход
         income = Transaction(id="income", date="2025-01-01", income=100.0)
         self.assertTrue(income.is_income)
-        self.assertFalse(income.is_expense)
-        self.assertFalse(income.is_transfer)
+        self.assertFalse(income.is_expense())
+        self.assertFalse(income.is_transfer())
 
         # Перевод между счетами
         transfer = Transaction(
@@ -61,9 +61,9 @@ class TestTransactionModel(unittest.TestCase):
             incomeAccount="account-1",
             outcomeAccount="account-2",
         )
-        self.assertTrue(transfer.is_transfer)
+        self.assertTrue(transfer.is_transfer())
         self.assertFalse(transfer.is_income)
-        self.assertFalse(transfer.is_expense)
+        self.assertFalse(transfer.is_expense())
 
     def test_transaction_with_geolocation(self):
         """Тест транзакции с геолокацией"""

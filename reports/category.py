@@ -44,13 +44,13 @@ class CategoryBreakdownReport(BaseReport):
             # Используем правильную логику для доходов и расходов
             if hasattr(t, "is_income") and t.is_income:
                 by_category[cat_name]["income"] += t.income or 0.0
-            elif hasattr(t, "is_expense") and t.is_expense:
+            elif t.is_expense(filtered) is True:
                 by_category[cat_name]["outcome"] += t.outcome or 0.0
 
         result = f"📊 Разбивка по категориям за {args['year']}"
         if args.get("month"):
             result += f"-{args['month']:02d}"
-        result += f"\n\n"
+        result += "\n\n"
 
         sorted_cats = sorted(
             by_category.items(), key=lambda x: x[1]["outcome"], reverse=True

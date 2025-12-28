@@ -7,10 +7,8 @@ from typing import Any, Dict
 
 from mcp.types import CallToolResult, TextContent
 
-from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
 from utils.filters import filter_transactions
-from utils.formatters import format_spending_report
 
 from .base import BaseReport
 
@@ -29,7 +27,6 @@ class SpendingReport(BaseReport):
         filtered = filter_transactions(transactions, filter_params)
 
         # Разделение на переводы и расходы
-        transfers = [t for t in filtered if t.is_transfer(filtered)]
         expenses = [t for t in filtered if t.is_expense(filtered)]
 
         if not expenses:
@@ -51,13 +48,6 @@ class SpendingReport(BaseReport):
                 if first_tag in categories:
                     cat_name = categories[first_tag].title
             by_category[cat_name] += t.outcome or 0.0
-
-        report_data = {
-            "total_expenses": total_expenses,
-            "transaction_count": len(expenses),
-            "average_expense": total_expenses / len(expenses) if expenses else 0,
-            "by_category": dict(by_category),
-        }
 
         period_desc = self._get_period_description(args)
         result = f"📊 Отчет по тратам за {period_desc}\n\n"

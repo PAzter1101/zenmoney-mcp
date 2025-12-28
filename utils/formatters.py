@@ -54,7 +54,7 @@ def format_spending_report(data: Dict[str, Any]) -> str:
     count = data.get("transaction_count", 0)
     avg = data.get("average_expense", 0)
 
-    result = f"📊 Отчет по тратам\n\n"
+    result = "📊 Отчет по тратам\n\n"
     result += f"Общие траты: {total:,.2f} ₽\n"
     result += f"Количество транзакций: {count}\n"
     result += f"Средняя трата: {avg:,.2f} ₽\n\n"

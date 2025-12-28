@@ -5,7 +5,7 @@
 import csv
 import io
 import json
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:
     from models.transaction import Transaction
@@ -45,13 +45,9 @@ class DataExportTool(BaseDataTool):
         if transaction_type == "income":
             filtered = [t for t in filtered if hasattr(t, "is_income") and t.is_income]
         elif transaction_type == "expense":
-            filtered = [
-                t for t in filtered if hasattr(t, "is_expense") and t.is_expense
-            ]
+            filtered = [t for t in filtered if t.is_expense(filtered) is True]
         elif transaction_type == "transfer":
-            filtered = [
-                t for t in filtered if hasattr(t, "is_transfer") and t.is_transfer
-            ]
+            filtered = [t for t in filtered if t.is_transfer(filtered) is True]
 
         # Лимит
         limit = args.get("limit", 1000)
@@ -81,7 +77,7 @@ class DataExportTool(BaseDataTool):
                     "payee": t.payee or "",
                     "category": cat_name,
                     "comment": t.comment or "",
-                    "type": self._get_transaction_type(t),
+                    "type": self._get_transaction_type(t, filtered),
                 }
             )
 
@@ -90,7 +86,10 @@ class DataExportTool(BaseDataTool):
 
         if export_format == "json":
             result = json.dumps(export_data, ensure_ascii=False, indent=2)
-            result_text = f"📄 Экспорт {len(export_data)} транзакций в JSON:\n\n```json\n{result}\n```"
+            result_text = (
+                f"📄 Экспорт {len(export_data)} транзакций в JSON:\n\n"
+                f"```json\n{result}\n```"
+            )
         else:  # CSV
             output = io.StringIO()
             if export_data:
@@ -98,17 +97,22 @@ class DataExportTool(BaseDataTool):
                 writer.writeheader()
                 writer.writerows(export_data)
             result = output.getvalue()
-            result_text = f"📄 Экспорт {len(export_data)} транзакций в CSV:\n\n```csv\n{result}\n```"
+            result_text = (
+                f"📄 Экспорт {len(export_data)} транзакций в CSV:\n\n"
+                f"```csv\n{result}\n```"
+            )
 
         return CallToolResult(content=[TextContent(type="text", text=result_text)])
 
-    def _get_transaction_type(self, transaction: "Transaction") -> str:
+    def _get_transaction_type(
+        self, transaction: "Transaction", all_transactions: List["Transaction"]
+    ) -> str:
         """Определение типа транзакции"""
         if hasattr(transaction, "is_income") and transaction.is_income:
             return "income"
-        elif hasattr(transaction, "is_expense") and transaction.is_expense:
+        elif transaction.is_expense(all_transactions) is True:
             return "expense"
-        elif hasattr(transaction, "is_transfer") and transaction.is_transfer:
+        elif transaction.is_transfer(all_transactions) is True:
             return "transfer"
         else:
             return "other"

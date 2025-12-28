@@ -23,7 +23,7 @@ class MerchantsTool(BaseDataTool):
         # Собираем статистику по торговцам
         merchants = {}
         for t in transactions:
-            if t.payee and hasattr(t, "is_expense") and t.is_expense:
+            if t.payee and t.is_expense(transactions) is True:
                 if t.payee not in merchants:
                     merchants[t.payee] = {"count": 0, "total": 0.0}
                 merchants[t.payee]["count"] += 1

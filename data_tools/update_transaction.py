@@ -27,7 +27,7 @@ class UpdateTransactionTool(BaseDataTool):
                     "description": "ID транзакции для обновления",
                 },
                 "category": {
-                    "type": "string", 
+                    "type": "string",
                     "description": "ID категории для назначения транзакции",
                 },
                 "comment": {
@@ -47,7 +47,7 @@ class UpdateTransactionTool(BaseDataTool):
     ) -> CallToolResult:
         """Выполнение обновления транзакции"""
         transaction_id = args["transaction_id"]
-        
+
         # Подготавливаем обновления
         updates = {}
         if "category" in args:
@@ -56,45 +56,39 @@ class UpdateTransactionTool(BaseDataTool):
             updates["comment"] = args["comment"]
         if "payee" in args:
             updates["payee"] = args["payee"]
-            
+
         if not updates:
             return CallToolResult(
                 content=[
-                    TextContent(
-                        type="text", 
-                        text="❌ Не указаны поля для обновления"
-                    )
+                    TextContent(type="text", text="❌ Не указаны поля для обновления")
                 ]
             )
 
         try:
             success = await client.update_transaction(transaction_id, updates)
-            
+
             if success:
                 result = f"✅ Транзакция {transaction_id} успешно обновлена\n\n"
                 result += "Обновленные поля:\n"
                 for field, value in updates.items():
                     result += f"  {field}: {value}\n"
-                    
-                return CallToolResult(
-                    content=[TextContent(type="text", text=result)]
-                )
+
+                return CallToolResult(content=[TextContent(type="text", text=result)])
             else:
                 return CallToolResult(
                     content=[
                         TextContent(
-                            type="text", 
-                            text=f"❌ Транзакция {transaction_id} не найдена"
+                            type="text",
+                            text=f"❌ Транзакция {transaction_id} не найдена",
                         )
                     ]
                 )
-                
+
         except Exception as e:
             return CallToolResult(
                 content=[
                     TextContent(
-                        type="text", 
-                        text=f"❌ Ошибка обновления транзакции: {str(e)}"
+                        type="text", text=f"❌ Ошибка обновления транзакции: {str(e)}"
                     )
                 ]
             )

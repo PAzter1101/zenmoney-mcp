@@ -9,7 +9,6 @@ from mcp.types import CallToolResult
 
 from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
-from utils.filters import filter_transactions
 
 
 class BaseReport(ABC):

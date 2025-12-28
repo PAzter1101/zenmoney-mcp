@@ -7,7 +7,6 @@ from typing import Any, Dict
 
 from mcp.types import CallToolResult, TextContent
 
-from models.transaction import TransactionFilter
 from src.client import ZenMoneyClient
 from utils.filters import filter_transactions
 
@@ -27,9 +26,7 @@ class MerchantAnalysisReport(BaseReport):
 
         filtered = filter_transactions(transactions, filter_params)
         # Используем правильную логику для определения расходов
-        expenses = [
-            t for t in filtered if t.is_expense(filtered) and t.payee
-        ]
+        expenses = [t for t in filtered if t.is_expense(filtered) and t.payee]
 
         by_merchant: Dict[str, Dict[str, float]] = defaultdict(
             lambda: {"count": 0, "total": 0}

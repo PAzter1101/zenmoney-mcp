@@ -52,7 +52,9 @@ class Transaction(BaseModel):
         outcome = self.outcome or 0.0
         return income - outcome
 
-    def is_expense(self, all_transactions: List["Transaction"] = None) -> bool:
+    def is_expense(
+        self, all_transactions: Optional[List["Transaction"]] = None
+    ) -> bool:
         """Является ли транзакция расходом (исключая переводы между счетами)"""
         if not self.outcome or self.outcome <= 0:
             return False
@@ -84,20 +86,28 @@ class Transaction(BaseModel):
 
         return False
 
-    def is_transfer(self, all_transactions: List["Transaction"] = None) -> bool:
+    def is_transfer(
+        self, all_transactions: Optional[List["Transaction"]] = None
+    ) -> bool:
         """Является ли транзакция переводом между счетами"""
         # Стандартная проверка разных счетов
-        if (self.incomeAccount and self.outcomeAccount and 
-            self.incomeAccount != self.outcomeAccount):
+        if (
+            self.incomeAccount
+            and self.outcomeAccount
+            and self.incomeAccount != self.outcomeAccount
+        ):
             return True
-            
+
         # Проверка парных операций (перевод между собственными счетами)
         if all_transactions and self.outcome and self.outcome > 0:
             for other in all_transactions:
-                if (other.id != self.id and 
-                    other.date == self.date and
-                    other.income and other.income > 0 and
-                    abs(self.outcome - other.income) < 0.01):
+                if (
+                    other.id != self.id
+                    and other.date == self.date
+                    and other.income
+                    and other.income > 0
+                    and abs(self.outcome - other.income) < 0.01
+                ):
                     return True
         return False
 
@@ -112,7 +122,7 @@ class Transaction(BaseModel):
         if self.date != other_transaction.date:
             return False
 
-        # Проверяем суммы (одна должна быть доходом, другая расходом с одинаковой суммой)
+        # Проверяем суммы (одна должна быть доходом, другая расходом)
         self_outcome = self.outcome or 0.0
         other_income = other_transaction.income or 0.0
         self_income = self.income or 0.0

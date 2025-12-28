@@ -3,7 +3,7 @@ API клиент для ДзенМани
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import requests
 
@@ -66,30 +66,32 @@ class ZenMoneyClient:
 
         return accounts
 
-    async def update_transaction(self, transaction_id: str, updates: Dict[str, Any]) -> bool:
+    async def update_transaction(
+        self, transaction_id: str, updates: Dict[str, Any]
+    ) -> bool:
         """Обновление транзакции"""
         url = f"{self.base_url}/v8/diff/"
-        
+
         # Получаем текущие данные транзакции
         data = await self.get_data()
         transaction_data = None
-        
+
         for t_data in data.get("transaction", []):
             if t_data["id"] == transaction_id:
                 transaction_data = t_data.copy()
                 break
-                
+
         if not transaction_data:
             return False
-            
+
         # Применяем обновления
         transaction_data.update(updates)
         transaction_data["changed"] = int(datetime.now().timestamp())
-        
+
         payload = {
             "serverTimestamp": data.get("serverTimestamp", 0),
             "currentClientTimestamp": int(datetime.now().timestamp()),
-            "transaction": [transaction_data]
+            "transaction": [transaction_data],
         }
 
         response = requests.post(url, json=payload, headers=self.headers)

@@ -60,7 +60,7 @@ class IncomeAnalysisReport(BaseReport):
         result = f"💰 Анализ доходов за {args['year']}"
         if args.get("month"):
             result += f"-{args['month']:02d}"
-        result += f"\n\n"
+        result += "\n\n"
 
         result += f"Общие доходы: +{total_income:,.2f} ₽\n"
         result += f"Количество операций: {len(incomes)}\n"
