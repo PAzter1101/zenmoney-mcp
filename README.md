@@ -80,12 +80,12 @@ requirements-test.txt # Дополнительные зависимости дл
 
 ### Установка
 ```bash
-pip install -r mcp_server/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Запуск сервера
 ```bash
-python mcp_server/src/server.py
+python src/server.py
 ```
 
 ### Подключение к MCP клиенту
