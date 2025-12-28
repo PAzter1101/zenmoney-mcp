@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from models.transaction import Transaction
 from models.category import Category
 
-def format_transactions(transactions: List[Transaction], limit: int = 20) -> str:
+def format_transactions(transactions: List[Transaction], limit: int = 20, show_ids: bool = False) -> str:
     """Форматирование списка транзакций"""
     if not transactions:
         return "Транзакции не найдены"
@@ -16,7 +16,11 @@ def format_transactions(transactions: List[Transaction], limit: int = 20) -> str
     for i, t in enumerate(transactions[:limit], 1):
         payee = (t.payee or 'Без получателя')[:25]
         amount = f"{t.amount:+.2f}"
-        result += f"{i:2d}. {t.date} | {amount:>10} | {payee}\n"
+        
+        if show_ids:
+            result += f"{i:2d}. {t.date} | {amount:>10} | {payee} | ID: {t.id}\n"
+        else:
+            result += f"{i:2d}. {t.date} | {amount:>10} | {payee}\n"
     
     if len(transactions) > limit:
         result += f"\n... и еще {len(transactions) - limit} транзакций"

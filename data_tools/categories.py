@@ -1,0 +1,18 @@
+"""
+Получение категорий
+"""
+
+from typing import Dict, Any
+from mcp.types import TextContent, CallToolResult
+from src.client import ZenMoneyClient
+from utils.formatters import format_categories
+from .base import BaseDataTool
+
+class CategoresTool(BaseDataTool):
+    """Получение категорий пользователя"""
+    
+    async def execute(self, client: ZenMoneyClient, args: Dict[str, Any]) -> CallToolResult:
+        """Получение категорий"""
+        categories = await client.get_categories()
+        result = format_categories(categories)
+        return CallToolResult(content=[TextContent(type="text", text=result)])

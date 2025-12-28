@@ -13,9 +13,7 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool
 
-from tools.auth import AuthTools
 from tools.data import DataTools
-from tools.analysis import AnalysisTools
 from tools.reports import ReportsTools
 
 class ZenMoneyMCPServer:
@@ -23,10 +21,9 @@ class ZenMoneyMCPServer:
     
     def __init__(self):
         self.server = Server("zenmoney-mcp")
-        self.auth_tools = AuthTools()
         self.data_tools = DataTools()
-        self.analysis_tools = AnalysisTools()
         self.reports_tools = ReportsTools()
+        self.token = None
         
     def register_tools(self):
         """Регистрация всех инструментов"""
@@ -34,28 +31,53 @@ class ZenMoneyMCPServer:
         @self.server.list_tools()
         async def list_tools():
             """Список всех доступных инструментов"""
+            import sys
+            print("DEBUG: Запрос списка инструментов", file=sys.stderr)
+            
             tools = []
-            tools.extend(self.auth_tools.list_tools())
-            tools.extend(self.data_tools.list_tools())
-            tools.extend(self.analysis_tools.list_tools())
-            tools.extend(self.reports_tools.list_tools())
-            return tools
+            try:
+                data_tools = self.data_tools.list_tools()
+                reports_tools = self.reports_tools.list_tools()
+                tools.extend(data_tools)
+                tools.extend(reports_tools)
+                
+                print(f"DEBUG: Загружено {len(tools)} инструментов:", file=sys.stderr)
+                for tool in tools:
+                    print(f"  - {tool.name}", file=sys.stderr)
+                    
+                return tools
+            except Exception as e:
+                print(f"DEBUG: Ошибка при загрузке инструментов: {e}", file=sys.stderr)
+                import traceback
+                traceback.print_exc(file=sys.stderr)
+                raise
         
         @self.server.call_tool()
         async def handle_tool_call(name: str, arguments: dict):
             """Обработка вызовов инструментов"""
-            token = self.auth_tools.get_token()
             
-            if name.startswith("auth_"):
-                return await self.auth_tools.handle_call(name, arguments)
-            elif name.startswith("data_"):
-                return await self.data_tools.handle_call(name, arguments, token)
-            elif name.startswith("analysis_"):
-                return await self.analysis_tools.handle_call(name, arguments, token)
-            elif name.startswith("reports_"):
-                return await self.reports_tools.handle_call(name, arguments, token)
-            else:
-                raise ValueError(f"Неизвестный инструмент: {name}")
+            # Логирование для отладки
+            import sys
+            print(f"DEBUG: Вызов инструмента '{name}' с аргументами: {arguments}", file=sys.stderr)
+            
+            try:
+                if name.startswith("data_"):
+                    result = await self.data_tools.handle_call(name, arguments, self.token)
+                    print(f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr)
+                    return result
+                elif name.startswith("reports_"):
+                    result = await self.reports_tools.handle_call(name, arguments, self.token)
+                    print(f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr)
+                    return result
+                else:
+                    error_msg = f"Неизвестный инструмент: {name}"
+                    print(f"DEBUG: {error_msg}", file=sys.stderr)
+                    raise ValueError(error_msg)
+            except Exception as e:
+                print(f"DEBUG: Ошибка при выполнении '{name}': {e}", file=sys.stderr)
+                import traceback
+                traceback.print_exc(file=sys.stderr)
+                raise
     
     async def run(self):
         """Запуск сервера"""
@@ -84,7 +106,7 @@ async def main():
     
     # Если токен передан, устанавливаем его сразу
     if token:
-        server.auth_tools.access_token = token
+        server.token = token
     
     await server.run()
 

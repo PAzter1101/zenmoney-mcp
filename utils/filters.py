@@ -9,12 +9,27 @@ def filter_transactions(transactions: List[Transaction], filter_params: Transact
     """Фильтрация транзакций по параметрам"""
     result = transactions
     
-    if filter_params.year:
-        result = [t for t in result if t.date.startswith(str(filter_params.year))]
-    
-    if filter_params.month:
-        month_str = f"{filter_params.year}-{filter_params.month:02d}"
-        result = [t for t in result if t.date.startswith(month_str)]
+    # Фильтрация по диапазону дат (приоритет)
+    if filter_params.date_from or filter_params.date_to:
+        if filter_params.date_from and filter_params.date_to:
+            result = [t for t in result if filter_params.date_from <= t.date <= filter_params.date_to]
+        elif filter_params.date_from:
+            result = [t for t in result if t.date >= filter_params.date_from]
+        elif filter_params.date_to:
+            result = [t for t in result if t.date <= filter_params.date_to]
+    else:
+        # Фильтрация по году/месяцу/дню (старая логика)
+        if filter_params.year:
+            year_str = str(filter_params.year)
+            if filter_params.month:
+                if filter_params.day:
+                    date_str = f"{year_str}-{filter_params.month:02d}-{filter_params.day:02d}"
+                    result = [t for t in result if t.date == date_str]
+                else:
+                    month_str = f"{year_str}-{filter_params.month:02d}"
+                    result = [t for t in result if t.date.startswith(month_str)]
+            else:
+                result = [t for t in result if t.date.startswith(year_str)]
     
     if filter_params.uncategorized_only:
         result = [t for t in result if not t.category]
