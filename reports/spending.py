@@ -28,34 +28,14 @@ class SpendingReport(BaseReport):
         filter_params = self._create_filter_params(args)
         filtered = filter_transactions(transactions, filter_params)
 
-        # Отладочная информация
-        debug_info = f"Всего транзакций: {len(filtered)}\n"
+        # Разделение на переводы и расходы
         transfers = [t for t in filtered if hasattr(t, "is_transfer") and t.is_transfer]
         expenses = [t for t in filtered if hasattr(t, "is_expense") and t.is_expense]
-
-        debug_info += f"Переводы между счетами: {len(transfers)}\n"
-        debug_info += f"Реальные расходы: {len(expenses)}\n\n"
-
-        # Показать примеры переводов
-        if transfers:
-            debug_info += "Примеры переводов:\n"
-            for t in transfers[:3]:
-                debug_info += f"  {t.date} | -{t.outcome:,.2f} | {t.payee or 'Без получателя'} | inc_acc: {bool(t.incomeAccount)} | out_acc: {bool(t.outcomeAccount)}\n"
-            debug_info += "\n"
-
-        # Показать примеры расходов
-        if expenses:
-            debug_info += "Примеры расходов:\n"
-            for t in expenses[:3]:
-                debug_info += f"  {t.date} | -{t.outcome:,.2f} | {t.payee or 'Без получателя'} | inc_acc: {bool(t.incomeAccount)} | out_acc: {bool(t.outcomeAccount)}\n"
-            debug_info += "\n"
 
         if not expenses:
             return CallToolResult(
                 content=[
-                    TextContent(
-                        type="text", text=f"{debug_info}📊 Расходы за период не найдены"
-                    )
+                    TextContent(type="text", text="📊 Расходы за период не найдены")
                 ]
             )
 
@@ -76,7 +56,7 @@ class SpendingReport(BaseReport):
         }
 
         period_desc = self._get_period_description(args)
-        result = debug_info + f"📊 Отчет по тратам за {period_desc}\n\n"
+        result = f"📊 Отчет по тратам за {period_desc}\n\n"
         result += f"Общие траты: {total_expenses:,.2f} ₽\n"
         result += f"Количество транзакций: {len(expenses)}\n"
         result += f"Средняя трата: {total_expenses / len(expenses):,.2f} ₽\n\n"

@@ -34,68 +34,26 @@ class ZenMoneyMCPServer:
         @self.server.list_tools()
         async def list_tools() -> list:
             """Список всех доступных инструментов"""
-            import sys
-
-            print("DEBUG: Запрос списка инструментов", file=sys.stderr)
-
             tools = []
-            try:
-                data_tools = self.data_tools.list_tools()
-                reports_tools = self.reports_tools.list_tools()
-                tools.extend(data_tools)
-                tools.extend(reports_tools)
-
-                print(f"DEBUG: Загружено {len(tools)} инструментов:", file=sys.stderr)
-                for tool in tools:
-                    print(f"  - {tool.name}", file=sys.stderr)
-
-                return tools
-            except Exception as e:
-                print(f"DEBUG: Ошибка при загрузке инструментов: {e}", file=sys.stderr)
-                import traceback
-
-                traceback.print_exc(file=sys.stderr)
-                raise
+            data_tools = self.data_tools.list_tools()
+            reports_tools = self.reports_tools.list_tools()
+            tools.extend(data_tools)
+            tools.extend(reports_tools)
+            return tools
 
         @self.server.call_tool()
         async def handle_tool_call(name: str, arguments: dict) -> CallToolResult:
             """Обработка вызовов инструментов"""
-
-            # Логирование для отладки
-            import sys
-
-            print(
-                f"DEBUG: Вызов инструмента '{name}' с аргументами: {arguments}",
-                file=sys.stderr,
-            )
-
-            try:
-                if name.startswith("data_"):
-                    result = await self.data_tools.handle_call(
-                        name, arguments, self.token or ""
-                    )
-                    print(
-                        f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr
-                    )
-                    return result
-                elif name.startswith("reports_"):
-                    result = await self.reports_tools.handle_call(
-                        name, arguments, self.token or ""
-                    )
-                    print(
-                        f"DEBUG: Инструмент '{name}' выполнен успешно", file=sys.stderr
-                    )
-                    return result
-                else:
-                    error_msg = f"Неизвестный инструмент: {name}"
-                    print(f"DEBUG: {error_msg}", file=sys.stderr)
-                    raise ValueError(error_msg)
-            except Exception as e:
-                print(f"DEBUG: Ошибка при выполнении '{name}': {e}", file=sys.stderr)
-                import traceback
-
-                traceback.print_exc(file=sys.stderr)
-                raise
+            if name.startswith("data_"):
+                return await self.data_tools.handle_call(
+                    name, arguments, self.token or ""
+                )
+            elif name.startswith("reports_"):
+                return await self.reports_tools.handle_call(
+                    name, arguments, self.token or ""
+                )
+            else:
+                raise ValueError(f"Неизвестный инструмент: {name}")
 
     async def run(self) -> None:
         """Запуск сервера"""
