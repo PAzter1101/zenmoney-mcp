@@ -1,8 +1,12 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -19,15 +23,40 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
 # Virtual environments
-venv/
+.env
+.venv
 env/
+venv/
+venv313/
 ENV/
-.venv/
-.env/
+env.bak/
+venv.bak/
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
@@ -43,15 +72,6 @@ ENV/
 ehthumbs.db
 Thumbs.db
 
-# Logs
+# Project specific
+tmp
 *.log
-logs/
-
-# Config files with secrets
-config.json
-.env.local
-.env.production
-
-# MCP specific
-*.token
-auth_cache/
