@@ -2,8 +2,8 @@
 Конфигурация для тестов
 """
 
-import sys
 import os
+import sys
 
 # Добавляем корневую директорию проекта в sys.path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -24,6 +24,7 @@ profile = "black"
 multi_line_output = 3
 line_length = 88
 known_first_party = ["src", "models", "data_tools", "reports", "tools", "utils"]
+skip_glob = ["venv313/*", ".venv/*", "build/*", "dist/*"]
 
 [tool.mypy]
 python_version = "3.10"
